@@ -145,14 +145,14 @@ typedef NS_ENUM(NSInteger, WXComponentBorderRecord) {
         
         __strong WXComponent* sself = wself;
         if (sself) {
-            UIGraphicsBeginImageContextWithOptions(bounds.size, [sself _bitmapOpaqueWithSize:bounds.size] , 0.0);
-            UIImage *image = [sself drawRect:bounds];
-            if (!image) {
-                image = UIGraphicsGetImageFromCurrentImageContext();
-            }
-            UIGraphicsEndImageContext();
-            
-            return image;
+            UIGraphicsImageRendererFormat *format = [[UIGraphicsImageRendererFormat alloc] init];
+            format.opaque = NO;
+            format.scale = [UIScreen mainScreen].scale;
+            UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size format:format];
+            UIImage *newImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+                [sself drawRect:bounds];
+            }];
+            return newImage;
         }
         else {
             return nil;

@@ -953,11 +953,20 @@ static BOOL bNeedRemoveEvents = YES;
 
 - (UIImage *)imageFromLayer:(CALayer *)layer
 {
-    UIGraphicsBeginImageContextWithOptions(layer.frame.size, NO, 0);
-    [layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return outputImage;
+//    UIGraphicsBeginImageContextWithOptions(layer.frame.size, NO, 0);
+//    [layer renderInContext:UIGraphicsGetCurrentContext()];
+//    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+//    UIGraphicsEndImageContext();
+//    return outputImage;
+    
+    UIGraphicsImageRendererFormat *format = [[UIGraphicsImageRendererFormat alloc] init];
+    format.opaque = NO;
+    format.scale = [UIScreen mainScreen].scale;
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:layer.frame.size format:format];
+    UIImage *newImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+        [layer renderInContext:UIGraphicsGetCurrentContext()];
+    }];
+    return newImage;
 }
 
 #pragma mark Reset
